@@ -257,14 +257,14 @@ const Quiz = () => {
                     <button
                       className="hover:bg-gray-300 p-4 w-full h-full flex "
                       onClick={() => {
-                        let newQuizData = [...quizData];
+                        const newQuizData = [...quizData];
                         newQuizData[qIndex].answer = setSelected(
                           newQuizData[qIndex].answer,
                           idx,
                         );
 
                         function setSelected(arr, index) {
-                          let arrCopy = [...arr].map((x) => {
+                          const arrCopy = [...arr].map((x) => {
                             x.selected = false;
                             return x;
                           });
