@@ -4,7 +4,33 @@ import { RiCloseLargeFill } from "react-icons/ri";
 import { GrPrevious, GrNext } from "react-icons/gr";
 import ProgressBar from "../components/ProgressBar";
 
-const data = {
+interface Info {
+  name: string;
+}
+
+interface Answer {
+  answer: string;
+  correct: boolean;
+  selected: boolean;
+}
+
+interface Quiz {
+  question: string;
+  answer: Answer[];
+}
+
+interface QuizMap {
+  [quizName: string]: {
+    info: Info;
+    quiz: Quiz[];
+  };
+}
+
+interface QuizAnsweredMap {
+  [questionIndex: number]: boolean;
+}
+
+const data: QuizMap = {
   test: {
     info: {
       name: "JavaScript Basics",
@@ -119,19 +145,27 @@ const data = {
     },
     quiz: [
       {
-        question: "Which method converts JSON data to a JavaScript object?",
+        question: "Which of the following values denotes a string?",
         answer: [
           {
-            answer: "JSON.parse()",
+            answer: "\\'Hello\\'",
+            correct: false,
+            selected: false,
           },
           {
-            answer: "JSON.fromString()",
+            answer: '\\"Hello\\"',
+            correct: false,
+            selected: false,
           },
           {
-            answer: "JSON.toObject()",
+            answer: "Both of the above",
+            correct: false,
+            selected: false,
           },
           {
-            answer: "JSON.stringify()",
+            answer: "None of the above",
+            correct: true,
+            selected: false,
           },
         ],
       },
@@ -145,23 +179,23 @@ type QuizParams = {
 
 const Quiz = () => {
   const [bDone, setDone] = useState<boolean>(false);
-  const [quizData, setQuizData] = useState([]);
-  const [quizAnswered, setQuizAnswer] = useState({});
-  const [info, setInfo] = useState();
-  const [qIndex, setIndex] = useState(0);
+  const [quizData, setQuizData] = useState<Quiz[]>([]);
+  const [quizAnswered, setQuizAnswer] = useState<QuizAnsweredMap>({});
+  const [quizDescription, setQuizDescription] = useState<string>("");
+  const [qIndex, setIndex] = useState<number>(0);
   const { id = "" } = useParams<QuizParams>();
 
   useEffect(() => {
     if (id in data) {
       setQuizData(data[id].quiz);
-      setInfo(data[id].info.name);
+      setQuizDescription(data[id].info.name);
     }
   }, [id]);
   return (
     <>
       <div className="flex justify-between flex-row w-full border-b">
         <div>
-          <div className="flex h-full pl-4 items-center">{info}</div>
+          <div className="flex h-full pl-4 items-center">{quizDescription}</div>
         </div>
         <div className="bg-gray-100 w-10 h-10 border-l">
           <div className="flex w-full h-full items-center justify-center">
@@ -263,7 +297,7 @@ const Quiz = () => {
                           idx,
                         );
 
-                        function setSelected(arr, index) {
+                        function setSelected(arr: Answer[], index: number) {
                           const arrCopy = [...arr].map((x) => {
                             x.selected = false;
                             return x;
