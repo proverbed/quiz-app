@@ -387,15 +387,15 @@ const Quiz = () => {
               <h4 className="text-5xl ">{(numberOfCorrectQuestions / quizData.length) * 100} %</h4>
             </div>
 
-            <div className="flex mt-10  ">
-              <div className=" w-1/2">
+            <div className="grid grid-rows-2 md:grid-cols-2 mt-10">
+              <div className="">
                 <div>
                   <h1 className="pb-2 text-gray-600">Rank</h1>
                   <h4 className="text-3xl pb-2">{rankList[rank].rank}</h4>
-                  <p className="w-3/4">{rankList[rank].description}</p>
+                  <p className="w-3/4 pb-10">{rankList[rank].description}</p>
                 </div>
               </div>
-              <div className=" w-1/2">
+              <div className="">
                 <div>
                   <h1 className="pb-4 text-gray-600">Overview Results</h1>
 
