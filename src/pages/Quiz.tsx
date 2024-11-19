@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { RiCloseLargeFill } from "react-icons/ri";
 import { GrPrevious, GrNext } from "react-icons/gr";
 import ProgressBar from "../components/ProgressBar";
@@ -66,7 +66,7 @@ const data: QuizMap = {
         answer: [
           {
             answer: "20",
-            correct: false,
+            correct: true,
             selected: false,
           },
           {
@@ -127,12 +127,12 @@ const data: QuizMap = {
           },
           {
             answer: "Both of the above",
-            correct: false,
+            correct: true,
             selected: false,
           },
           {
             answer: "None of the above",
-            correct: true,
+            correct: false,
             selected: false,
           },
         ],
@@ -173,24 +173,73 @@ const data: QuizMap = {
   },
 };
 
+const rankList: {[questionIndex: string]: {rank: string, description: string}} = {
+  inexperienced: {
+    rank: 'Inexperienced', 
+    description: "It looks like you need to study more. But no worries! Review your answers for quick insights."
+  },
+  amateur: {
+    rank: "Amateur", 
+    description: "You are missing some important points. Revise, for you'll do much better!"
+  },
+  competent: {
+    rank: 'Competent', 
+    description: "It looks like you need to study more. But no worries! Review your answers for quick insights."
+  },
+  master: {
+    rank: 'Master',
+    description: 'You simply nailed it! Excellent! Keep it up!!'
+  }
+}
+
 type QuizParams = {
   id: string;
 };
 
 const Quiz = () => {
+  const [numberOfCorrectQuestions, setNumberOfCorrectQuestions] = useState(0);
   const [bDone, setDone] = useState<boolean>(false);
   const [quizData, setQuizData] = useState<Quiz[]>([]);
   const [quizAnswered, setQuizAnswer] = useState<QuizAnsweredMap>({});
   const [quizDescription, setQuizDescription] = useState<string>("");
   const [qIndex, setIndex] = useState<number>(0);
   const { id = "" } = useParams<QuizParams>();
+  const navigate = useNavigate();
+  const [rank, setRank] = useState("inexperienced");
 
   useEffect(() => {
     if (id in data) {
-      setQuizData(data[id].quiz);
+      const clone = JSON.parse(JSON.stringify(data[id].quiz));
+      setQuizData(clone);
       setQuizDescription(data[id].info.name);
     }
   }, [id]);
+
+  useEffect(() => {
+    let count: number = 0;
+    let score: number = 0;
+    quizData.forEach((element: Quiz) => {
+      element.answer.forEach((x: Answer) => {
+        if (x.selected && x.correct) {
+          count++;
+        }
+      });
+      setNumberOfCorrectQuestions(count);
+      score = (count/quizData.length)*100;
+
+      if (score < 50) {
+        setRank('inexperienced');
+      } else if (score >= 50 && score <= 74) {
+        setRank('amateur');
+      } else if (score >= 75 && score < 100) {
+        setRank('competent');
+      } else {
+        setRank('master');
+      }
+      console.log(count, quizData.length, score);
+    });
+  }, [bDone]);
+
   return (
     <>
       <div className="flex justify-between flex-row w-full border-b">
@@ -199,7 +248,9 @@ const Quiz = () => {
         </div>
         <div className="bg-gray-100 w-10 h-10 border-l">
           <div className="flex w-full h-full items-center justify-center">
-            <Link to="/">
+            <Link
+              to="/"
+            >
               <RiCloseLargeFill />
             </Link>
           </div>
@@ -208,12 +259,14 @@ const Quiz = () => {
       <div>
         <div className="bg-gray-50 h-20 w-full fixed bottom-0 sm:px-8 px-4 border border-t">
           <div className="flex justify-between items-center h-full">
-            <div className="flex w-64 gap-2 items-center">
-              <div className="w-2/3">
-                <ProgressBar value={(qIndex + 1) / quizData.length} />
-              </div>
-              <div className="w-1/3">
-                {qIndex + 1} of {quizData.length}
+            <div>
+              <div className={bDone ? 'hidden' : 'flex w-64 gap-2 items-center'}>
+                <div className="w-2/3">
+                  <ProgressBar value={(qIndex + 1) / quizData.length} />
+                </div>
+                <div className="w-1/3">
+                  {qIndex + 1} of {quizData.length}
+                </div>
               </div>
             </div>
             <div className="flex gap-2">
@@ -224,12 +277,16 @@ const Quiz = () => {
                   disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2 border-b border-slate-600"
                   type="button"
                   onClick={() => {
-                    setIndex(qIndex - 1);
+                    if (bDone) {
+                      alert('Review answers')
+                    } else {
+                      setIndex(qIndex - 1);
+                    }
                   }}
                 >
                   <div className="flex items-center gap-2">
                     <GrPrevious />
-                    <div>Prev</div>
+                    <div>{bDone ? 'Review answers' : 'Prev'}</div>
                   </div>
                 </button>
               </div>
@@ -258,11 +315,15 @@ const Quiz = () => {
                   type="button"
                   disabled={!quizAnswered[qIndex]}
                   onClick={() => {
-                    setDone(true);
+                    if (bDone) {
+                      navigate('/');
+                    } else {
+                      setDone(true);
+                    }
                   }}
                 >
                   <div className="flex items-center gap-2">
-                    <div>Calculate Score</div>
+                    <div>{bDone ? 'Next Quiz' : 'Calculate Score'}</div>
                     <GrNext />
                   </div>
                 </button>
@@ -320,9 +381,44 @@ const Quiz = () => {
           </div>
         </div>
         <div className={bDone ? "block" : "hidden"}>
-          <h1>Test Results</h1>
+          <div className="h-full w-full">
+            <div className="flex w-full items-center flex-col ">
+              <h1 className="text-gray-600">Score</h1>
+              <h4 className="text-5xl ">{(numberOfCorrectQuestions / quizData.length) * 100} %</h4>
+            </div>
 
-          <div>this is your score</div>
+            <div className="flex mt-10  ">
+              <div className=" w-1/2">
+                <div>
+                  <h1 className="pb-2 text-gray-600">Rank</h1>
+                  <h4 className="text-3xl pb-2">{rankList[rank].rank}</h4>
+                  <p className="w-3/4">{rankList[rank].description}</p>
+                </div>
+              </div>
+              <div className=" w-1/2">
+                <div>
+                  <h1 className="pb-4 text-gray-600">Overview Results</h1>
+
+                  <table className="table-fixed w-3/4 rounded-md border border-gray-400">
+                    <tbody className="  ">
+                      <tr className="">
+                        <td className="w-1/2 bg-gray-100 border-gray-400 border p-2 font-bold">Total questions</td>
+                        <td className="border-gray-400 border p-2">{quizData.length}</td>
+                      </tr>
+                      <tr>
+                        <td className="w-1/2 bg-gray-100 border-gray-400 border p-2 font-bold">Correct answers</td>
+                        <td className="border-gray-400 border p-2">{numberOfCorrectQuestions}</td>
+                      </tr>
+                      {/* <tr>
+                        <td className="w-1/2 bg-gray-100 border-gray-400 border p-2 font-bold">Time taken</td>{" "}
+                        <td className="border-gray-400 border p-2">10 minutes</td>
+                      </tr> */}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
