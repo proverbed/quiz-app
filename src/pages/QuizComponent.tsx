@@ -5,175 +5,8 @@ import { GrPrevious, GrNext } from "react-icons/gr";
 import ProgressBar from "../components/ProgressBar";
 import { RxCross2 } from "react-icons/rx";
 import { FaCheck } from "react-icons/fa6";
-
-interface Info {
-  name: string;
-}
-
-interface Answer {
-  answer: string;
-  correct: boolean;
-  selected: boolean;
-}
-
-interface Quiz {
-  question: string;
-  answer: Answer[];
-}
-
-interface QuizMap {
-  [quizName: string]: {
-    info: Info;
-    quiz: Quiz[];
-  };
-}
-
-interface QuizAnsweredMap {
-  [questionIndex: number]: boolean;
-}
-
-const data: QuizMap = {
-  test: {
-    info: {
-      name: "JavaScript Basics",
-    },
-    quiz: [
-      {
-        question: "How to declare a variable in JavaScript?",
-        answer: [
-          {
-            answer: "Using dec",
-            correct: false,
-            selected: false,
-          },
-          {
-            answer: "Using declare",
-            correct: false,
-            selected: false,
-          },
-          {
-            answer: "Using var",
-            correct: true,
-            selected: false,
-          },
-          {
-            answer: "Using variable",
-            correct: false,
-            selected: false,
-          },
-        ],
-      },
-      {
-        question: "What does the following code log?",
-        answer: [
-          {
-            answer: "20",
-            correct: true,
-            selected: false,
-          },
-          {
-            answer: "x10",
-            correct: false,
-            selected: false,
-          },
-          {
-            answer: "'x10'",
-            correct: false,
-            selected: false,
-          },
-          {
-            answer: "1010",
-            correct: false,
-            selected: false,
-          },
-        ],
-      },
-      {
-        question: "Which of the following definitions best describes a string?",
-        answer: [
-          {
-            answer: "A sequence of digits",
-
-            correct: false,
-            selected: false,
-          },
-          {
-            answer: "A sequence of emoticons",
-            correct: false,
-            selected: false,
-          },
-          {
-            answer: "A sequence of Boolean values",
-            correct: false,
-            selected: false,
-          },
-          {
-            answer: "A sequence of textual characters",
-            correct: true,
-            selected: false,
-          },
-        ],
-      },
-      {
-        question: "Which of the following values denotes a string?",
-        answer: [
-          {
-            answer: "\\'Hello\\'",
-            correct: false,
-            selected: false,
-          },
-          {
-            answer: '\\"Hello\\"',
-            correct: false,
-            selected: false,
-          },
-          {
-            answer: "Both of the above",
-            correct: true,
-            selected: false,
-          },
-          {
-            answer: "None of the above",
-            correct: false,
-            selected: false,
-          },
-        ],
-      },
-    ],
-  },
-  another: {
-    info: {
-      name: "Another JavaScript Basics",
-    },
-    quiz: [
-      {
-        question: "Which of the following values denotes a string?",
-        answer: [
-          {
-            answer: "\\'Hello\\'",
-            correct: false,
-            selected: false,
-          },
-          {
-            answer: '\\"Hello\\"',
-            correct: false,
-            selected: false,
-          },
-          {
-            answer: "Both of the above",
-            correct: false,
-            selected: false,
-          },
-          {
-            answer: "None of the above",
-            correct: true,
-            selected: false,
-          },
-        ],
-      },
-    ],
-  },
-};
+import Quiz, { Answer, QuizAnsweredMap } from "../store/Types";
+import { store as data } from "../store/store.ts";
 
 const rankList: {
   [questionIndex: string]: { rank: string; description: string };
@@ -209,7 +42,7 @@ enum Status {
   Review,
 }
 
-const Quiz = () => {
+const QuizComponent = () => {
   const [numberOfCorrectQuestions, setNumberOfCorrectQuestions] = useState(0);
   const [status, setStatus] = useState<Status>(Status.InProgress);
   const [quizData, setQuizData] = useState<Quiz[]>([]);
@@ -458,7 +291,7 @@ const Quiz = () => {
         <div className={status === Status.Complete ? "block" : "hidden"}>
           <div className="h-full w-full">
             <div className="flex w-full items-center flex-col ">
-              <h1 className="text-gray-600">Score</h1>
+              <h1 className="text-gray-600 font-light">Score</h1>
               <h4 className="text-5xl ">
                 {(numberOfCorrectQuestions / quizData.length) * 100} %
               </h4>
@@ -467,14 +300,16 @@ const Quiz = () => {
             <div className="grid grid-rows-2 md:grid-cols-2 mt-10">
               <div className="">
                 <div>
-                  <h1 className="pb-2 text-gray-600">Rank</h1>
+                  <h1 className="pb-2 text-gray-600 font-light">Rank</h1>
                   <h4 className="text-3xl pb-2">{rankList[rank].rank}</h4>
                   <p className="w-3/4 pb-10">{rankList[rank].description}</p>
                 </div>
               </div>
               <div className="">
                 <div>
-                  <h1 className="pb-4 text-gray-600">Overview Results</h1>
+                  <h1 className="pb-4 text-gray-600 font-light">
+                    Overview Results
+                  </h1>
 
                   <table className="table-fixed w-3/4 rounded-md border border-gray-400">
                     <tbody className="  ">
@@ -510,4 +345,4 @@ const Quiz = () => {
   );
 };
 
-export default Quiz;
+export default QuizComponent;

@@ -1,10 +1,10 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import HomePage from './pages/Home';
-import Quiz from './pages/Quiz';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import HomePage from "./pages/Home";
+import QuizComponent from "./pages/QuizComponent";
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <HomePage />,
     errorElement: (
       <>
@@ -14,8 +14,8 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/quiz/:id',
-    element: <Quiz />,
+    path: "/quiz/:id",
+    element: <QuizComponent />,
   },
 ]);
 
