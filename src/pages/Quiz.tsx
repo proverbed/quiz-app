@@ -3,6 +3,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { RiCloseLargeFill } from "react-icons/ri";
 import { GrPrevious, GrNext } from "react-icons/gr";
 import ProgressBar from "../components/ProgressBar";
+import { RxCross2 } from "react-icons/rx";
+import { FaCheck } from "react-icons/fa6";
 
 interface Info {
   name: string;
@@ -173,32 +175,43 @@ const data: QuizMap = {
   },
 };
 
-const rankList: {[questionIndex: string]: {rank: string, description: string}} = {
+const rankList: {
+  [questionIndex: string]: { rank: string; description: string };
+} = {
   inexperienced: {
-    rank: 'Inexperienced', 
-    description: "It looks like you need to study more. But no worries! Review your answers for quick insights."
+    rank: "Inexperienced",
+    description:
+      "It looks like you need to study more. But no worries! Review your answers for quick insights.",
   },
   amateur: {
-    rank: "Amateur", 
-    description: "You are missing some important points. Revise, for you'll do much better!"
+    rank: "Amateur",
+    description:
+      "You are missing some important points. Revise, for you'll do much better!",
   },
   competent: {
-    rank: 'Competent', 
-    description: "It looks like you need to study more. But no worries! Review your answers for quick insights."
+    rank: "Competent",
+    description:
+      "It looks like you need to study more. But no worries! Review your answers for quick insights.",
   },
   master: {
-    rank: 'Master',
-    description: 'You simply nailed it! Excellent! Keep it up!!'
-  }
-}
+    rank: "Master",
+    description: "You simply nailed it! Excellent! Keep it up!!",
+  },
+};
 
 type QuizParams = {
   id: string;
 };
 
+enum Status {
+  InProgress,
+  Complete,
+  Review,
+}
+
 const Quiz = () => {
   const [numberOfCorrectQuestions, setNumberOfCorrectQuestions] = useState(0);
-  const [bDone, setDone] = useState<boolean>(false);
+  const [status, setStatus] = useState<Status>(Status.InProgress);
   const [quizData, setQuizData] = useState<Quiz[]>([]);
   const [quizAnswered, setQuizAnswer] = useState<QuizAnsweredMap>({});
   const [quizDescription, setQuizDescription] = useState<string>("");
@@ -225,20 +238,20 @@ const Quiz = () => {
         }
       });
       setNumberOfCorrectQuestions(count);
-      score = (count/quizData.length)*100;
+      score = (count / quizData.length) * 100;
 
       if (score < 50) {
-        setRank('inexperienced');
+        setRank("inexperienced");
       } else if (score >= 50 && score <= 74) {
-        setRank('amateur');
+        setRank("amateur");
       } else if (score >= 75 && score < 100) {
-        setRank('competent');
+        setRank("competent");
       } else {
-        setRank('master');
+        setRank("master");
       }
       console.log(count, quizData.length, score);
     });
-  }, [bDone]);
+  }, [status]);
 
   return (
     <>
@@ -248,9 +261,7 @@ const Quiz = () => {
         </div>
         <div className="bg-gray-100 w-10 h-10 border-l">
           <div className="flex w-full h-full items-center justify-center">
-            <Link
-              to="/"
-            >
+            <Link to="/">
               <RiCloseLargeFill />
             </Link>
           </div>
@@ -260,7 +271,13 @@ const Quiz = () => {
         <div className="bg-gray-50 h-20 w-full fixed bottom-0 sm:px-8 px-4 border border-t">
           <div className="flex justify-between items-center h-full">
             <div>
-              <div className={bDone ? 'hidden' : 'flex w-64 gap-2 items-center'}>
+              <div
+                className={
+                  status === Status.Complete
+                    ? "hidden"
+                    : "flex w-64 gap-2 items-center"
+                }
+              >
                 <div className="w-2/3">
                   <ProgressBar value={(qIndex + 1) / quizData.length} />
                 </div>
@@ -277,8 +294,9 @@ const Quiz = () => {
                   disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2 border-b border-slate-600"
                   type="button"
                   onClick={() => {
-                    if (bDone) {
-                      alert('Review answers')
+                    if (status === Status.Complete) {
+                      setIndex(0);
+                      setStatus(Status.Review);
                     } else {
                       setIndex(qIndex - 1);
                     }
@@ -286,7 +304,9 @@ const Quiz = () => {
                 >
                   <div className="flex items-center gap-2">
                     <GrPrevious />
-                    <div>{bDone ? 'Review answers' : 'Prev'}</div>
+                    <div>
+                      {status === Status.Complete ? "Review answers" : "Prev"}
+                    </div>
                   </div>
                 </button>
               </div>
@@ -307,33 +327,39 @@ const Quiz = () => {
                   </div>
                 </button>
               </div>
-              <div
-                className={qIndex != quizData.length - 1 ? "hidden" : "block"}
-              >
-                <button
-                  className="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
-                  type="button"
-                  disabled={!quizAnswered[qIndex]}
-                  onClick={() => {
-                    if (bDone) {
-                      navigate('/');
-                    } else {
-                      setDone(true);
-                    }
-                  }}
+              <div className={status === Status.Review ? "hidden" : "block"}>
+                <div
+                  className={qIndex != quizData.length - 1 ? "hidden" : "block"}
                 >
-                  <div className="flex items-center gap-2">
-                    <div>{bDone ? 'Next Quiz' : 'Calculate Score'}</div>
-                    <GrNext />
-                  </div>
-                </button>
+                  <button
+                    className="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
+                    type="button"
+                    disabled={!quizAnswered[qIndex]}
+                    onClick={() => {
+                      if (status === Status.Complete) {
+                        navigate("/");
+                      } else {
+                        setStatus(Status.Complete);
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div>
+                        {status === Status.Complete
+                          ? "Next Quiz"
+                          : "Calculate Score"}
+                      </div>
+                      <GrNext />
+                    </div>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
       <div className="md:p-10 p-4">
-        <div className={bDone ? "hidden" : "block"}>
+        <div className={status === Status.Complete ? "hidden" : "block"}>
           <div className="md:pb-10 pb-4 text-3xl font-bold">
             {quizData[qIndex] && quizData[qIndex].question}
           </div>
@@ -344,33 +370,82 @@ const Quiz = () => {
                   <li
                     key={item.answer}
                     className={
-                      item.selected
-                        ? "m-4 bg-gray-200 border-b border"
-                        : "m-4 border-b border"
+                      (item.selected && "bg-gray-200") +
+                      " " +
+                      (status === Status.Review &&
+                        item.selected &&
+                        !item.correct &&
+                        "border-red-400") +
+                      " " +
+                      "m-4 border-b border"
                     }
                   >
+                    <div
+                      className={status === Status.Review ? "block" : "hidden"}
+                    >
+                      <div
+                        className={
+                          item.selected && item.correct ? "block" : "hidden"
+                        }
+                      >
+                        <div className="flex gap-2 items-center bg-green-300 w-fit p-2 rounded-md">
+                          <div>
+                            <FaCheck size={14} />
+                          </div>
+                          <div className="text-xs">Correct answer</div>
+                        </div>
+                      </div>
+                      <div
+                        className={
+                          !item.selected && item.correct ? "block" : "hidden"
+                        }
+                      >
+                        <div className="flex gap-2 items-center bg-slate-600 w-fit p-2 rounded-md">
+                          <div>
+                            <FaCheck size={14} style={{ color: "white" }} />
+                          </div>
+                          <div className="text-xs text-white">
+                            Correct answer
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        className={
+                          item.selected && !item.correct ? "block" : "hidden"
+                        }
+                      >
+                        <div className="flex gap-2 items-center bg-red-300 w-fit p-2 rounded-md">
+                          <div>
+                            <RxCross2 size={14} />
+                          </div>
+                          <div className="text-xs">Wrong selection</div>
+                        </div>
+                      </div>
+                    </div>
                     <button
                       className="hover:bg-gray-300 p-4 w-full h-full flex "
                       onClick={() => {
-                        const newQuizData = [...quizData];
-                        newQuizData[qIndex].answer = setSelected(
-                          newQuizData[qIndex].answer,
-                          idx,
-                        );
+                        if (status !== Status.Review) {
+                          const newQuizData = [...quizData];
+                          newQuizData[qIndex].answer = setSelected(
+                            newQuizData[qIndex].answer,
+                            idx,
+                          );
 
-                        function setSelected(arr: Answer[], index: number) {
-                          const arrCopy = [...arr].map((x) => {
-                            x.selected = false;
-                            return x;
-                          });
-                          const quizAnswers = { ...quizAnswered };
-                          quizAnswers[qIndex] = true;
-                          setQuizAnswer(quizAnswers);
-                          arrCopy[index].selected = true;
-                          return arrCopy;
+                          function setSelected(arr: Answer[], index: number) {
+                            const arrCopy = [...arr].map((x) => {
+                              x.selected = false;
+                              return x;
+                            });
+                            const quizAnswers = { ...quizAnswered };
+                            quizAnswers[qIndex] = true;
+                            setQuizAnswer(quizAnswers);
+                            arrCopy[index].selected = true;
+                            return arrCopy;
+                          }
+
+                          setQuizData(newQuizData);
                         }
-
-                        setQuizData(newQuizData);
                       }}
                     >
                       {item.answer}
@@ -380,11 +455,13 @@ const Quiz = () => {
             </ol>
           </div>
         </div>
-        <div className={bDone ? "block" : "hidden"}>
+        <div className={status === Status.Complete ? "block" : "hidden"}>
           <div className="h-full w-full">
             <div className="flex w-full items-center flex-col ">
               <h1 className="text-gray-600">Score</h1>
-              <h4 className="text-5xl ">{(numberOfCorrectQuestions / quizData.length) * 100} %</h4>
+              <h4 className="text-5xl ">
+                {(numberOfCorrectQuestions / quizData.length) * 100} %
+              </h4>
             </div>
 
             <div className="grid grid-rows-2 md:grid-cols-2 mt-10">
@@ -402,12 +479,20 @@ const Quiz = () => {
                   <table className="table-fixed w-3/4 rounded-md border border-gray-400">
                     <tbody className="  ">
                       <tr className="">
-                        <td className="w-1/2 bg-gray-100 border-gray-400 border p-2 font-bold">Total questions</td>
-                        <td className="border-gray-400 border p-2">{quizData.length}</td>
+                        <td className="w-1/2 bg-gray-100 border-gray-400 border p-2 font-bold">
+                          Total questions
+                        </td>
+                        <td className="border-gray-400 border p-2">
+                          {quizData.length}
+                        </td>
                       </tr>
                       <tr>
-                        <td className="w-1/2 bg-gray-100 border-gray-400 border p-2 font-bold">Correct answers</td>
-                        <td className="border-gray-400 border p-2">{numberOfCorrectQuestions}</td>
+                        <td className="w-1/2 bg-gray-100 border-gray-400 border p-2 font-bold">
+                          Correct answers
+                        </td>
+                        <td className="border-gray-400 border p-2">
+                          {numberOfCorrectQuestions}
+                        </td>
                       </tr>
                       {/* <tr>
                         <td className="w-1/2 bg-gray-100 border-gray-400 border p-2 font-bold">Time taken</td>{" "}
