@@ -100,7 +100,7 @@ const QuizComponent = () => {
           </div>
         </div>
       </div>
-      <div>
+      <div className="container">
         <div className="bg-gray-50 h-20 w-full fixed bottom-0 sm:px-8 px-4 border border-t">
           <div className="flex justify-between items-center h-full">
             <div>
@@ -108,13 +108,15 @@ const QuizComponent = () => {
                 className={
                   status === Status.Complete
                     ? "hidden"
-                    : "flex w-64 gap-2 items-center"
+                    : "flex sm:w-64 w-16 gap-2 items-center"
                 }
               >
-                <div className="w-2/3">
-                  <ProgressBar value={(qIndex + 1) / quizData.length} />
+                <div className="w-2/3 sm:block hidden">
+                  <div className="">
+                    <ProgressBar value={(qIndex + 1) / quizData.length} />
+                  </div>
                 </div>
-                <div className="w-1/3">
+                <div className="sm:w-1/3 w-full">
                   {qIndex + 1} of {quizData.length}
                 </div>
               </div>
