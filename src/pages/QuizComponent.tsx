@@ -332,7 +332,8 @@ const QuizComponent = () => {
             <div className="flex w-full items-center flex-col ">
               <h1 className="text-gray-600 font-light">Score</h1>
               <h4 className="text-5xl ">
-                {(numberOfCorrectQuestions / quizData.length) * 100} %
+                {Math.round((numberOfCorrectQuestions / quizData.length) * 100)}{" "}
+                %
               </h4>
             </div>
 
