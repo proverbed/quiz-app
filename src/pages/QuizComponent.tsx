@@ -122,7 +122,14 @@ const QuizComponent = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <div className={qIndex == 0 ? "hidden" : "block"}>
+              <div
+                className={
+                  qIndex === 0 || status === Status.Complete
+                    ? "hidden"
+                    : "block"
+                }
+              >
+                {/* <div> */}
                 <button
                   className="rounded-md bg-white py-2 px-4 border border-transparent text-center text-sm text-black transition-all 
                   shadow-md hover:shadow-lg focus:bg-slate-300 focus:shadow-none active:bg-slate-400 hover:bg-slate-100 active:shadow-none 
@@ -131,7 +138,6 @@ const QuizComponent = () => {
                   onClick={() => {
                     if (status === Status.Complete) {
                       setIndex(0);
-                      setStatus(Status.Review);
                     } else {
                       setIndex(qIndex - 1);
                     }
@@ -139,9 +145,24 @@ const QuizComponent = () => {
                 >
                   <div className="flex items-center gap-2">
                     <GrPrevious />
-                    <div>
-                      {status === Status.Complete ? "Review answers" : "Prev"}
-                    </div>
+                    <div>Prev</div>
+                  </div>
+                </button>
+              </div>
+              <div className={status !== Status.Complete ? "hidden" : "block"}>
+                <button
+                  className="rounded-md bg-white py-2 px-4 border border-transparent text-center text-sm text-black transition-all 
+                  shadow-md hover:shadow-lg focus:bg-slate-300 focus:shadow-none active:bg-slate-400 hover:bg-slate-100 active:shadow-none 
+                  disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2 border-b border-slate-600"
+                  type="button"
+                  onClick={() => {
+                    setIndex(0);
+                    setStatus(Status.Review);
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <GrPrevious />
+                    <div>Review answers</div>
                   </div>
                 </button>
               </div>
@@ -197,6 +218,22 @@ const QuizComponent = () => {
         <div className={status === Status.Complete ? "hidden" : "block"}>
           <div className="md:pb-10 pb-4 text-3xl font-bold">
             {quizData[qIndex] && quizData[qIndex].question}
+          </div>
+          <div
+            className={
+              status === Status.Review &&
+              quizData[qIndex] &&
+              quizData[qIndex].explanation
+                ? "block"
+                : "hidden"
+            }
+          >
+            <div className="bg-gray-100 rounded-md px-4 py-6">
+              <div className="w-3/4">
+                <h1 className="font-bold pb-4 ">Explanation:</h1>
+                <div>{quizData[qIndex] && quizData[qIndex].explanation}</div>
+              </div>
+            </div>
           </div>
           <div>
             <ol>
@@ -295,7 +332,8 @@ const QuizComponent = () => {
             <div className="flex w-full items-center flex-col ">
               <h1 className="text-gray-600 font-light">Score</h1>
               <h4 className="text-5xl ">
-                {(numberOfCorrectQuestions / quizData.length) * 100} %
+                {Math.round((numberOfCorrectQuestions / quizData.length) * 100)}{" "}
+                %
               </h4>
             </div>
 

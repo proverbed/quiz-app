@@ -4,6 +4,7 @@ export const store: QuizMap = {
     JavascriptBasics: {
       info: {
         name: "JavaScript Basics",
+        description: "This is a simple JavaScript quiz, which covers basic JavaScript concepts."
       },
       quiz: [
         {
@@ -109,32 +110,86 @@ export const store: QuizMap = {
         },
       ],
     },
-    another: {
+    randomJavascript: {
       info: {
-        name: "Another JavaScript Basics",
+        name: "Random JavaScript Questions",
+        description: "Just some random Javascript questions"
       },
       quiz: [
         {
-          question: "Which of the following values denotes a string?",
+          question: "In JavaScript, which of the following is NOT in the Temporal Dead Zone(TDZ) during hoisting?",
+          explanation: "var is hoisted with the default value of undefined while let, const and classes are hoisted but are in the Temporal Dead Zone(TDZ) until the declaration is executed.",
           answer: [
             {
-              answer: "\\'Hello\\'",
+              answer: "class",
               correct: false,
               selected: false,
             },
             {
-              answer: '\\"Hello\\"',
+              answer: 'const',
               correct: false,
               selected: false,
             },
             {
-              answer: "Both of the above",
-              correct: false,
-              selected: false,
-            },
-            {
-              answer: "None of the above",
+              answer: "var",
               correct: true,
+              selected: false,
+            },
+            {
+              answer: "let",
+              correct: false,
+              selected: false,
+            },
+          ],
+        },
+        {
+          question: "In JavaScript, which one of these types of loops will always run at least once?",
+          explanation: "The sequence of statements in a do..while loop runs at least once because the condition is evaluated after running the statements.",
+          answer: [
+            {
+              answer: "Do... While Loop",
+              correct: true,
+              selected: false,
+            },
+            {
+              answer: 'For Loop',
+              correct: false,
+              selected: false,
+            },
+            {
+              answer: "While Loop",
+              correct: false,
+              selected: false,
+            },
+            {
+              answer: "for each",
+              correct: false,
+              selected: false,
+            },
+          ],
+        },
+        {
+          question: "In JavaScript, which of the following functions accepts an image element and a file as arguments?",
+          explanation: "An HTML <input> element with the type='file' attribute is represented by the Input FileUpload object and is a client-side JavaScript object.",
+          answer: [
+            {
+              answer: "Client",
+              correct: false,
+              selected: false,
+            },
+            {
+              answer: 'FileUpLoad',
+              correct: true,
+              selected: false,
+            },
+            {
+              answer: "DownFile",
+              correct: false,
+              selected: false,
+            },
+            {
+              answer: "Database",
+              correct: false,
               selected: false,
             },
           ],

@@ -1,5 +1,6 @@
 export interface Info {
     name: string;
+    description: string;
   }
   
   export interface Answer {
@@ -10,6 +11,7 @@ export interface Info {
   
   export interface Quiz {
     question: string;
+    explanation?: string;
     answer: Answer[];
   }
   
