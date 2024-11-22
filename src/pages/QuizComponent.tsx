@@ -214,7 +214,7 @@ const QuizComponent = () => {
           </div>
         </div>
       </div>
-      <div className="md:p-10 p-4">
+      <div className="md:p-10 p-4 pb-20">
         <div className={status === Status.Complete ? "hidden" : "block"}>
           <div className="md:pb-10 pb-4 text-3xl font-bold">
             {quizData[qIndex] && quizData[qIndex].question}
@@ -229,7 +229,7 @@ const QuizComponent = () => {
             }
           >
             <div className="bg-gray-100 rounded-md px-4 py-6">
-              <div className="w-3/4">
+              <div className="sm:w-3/4 w-full">
                 <h1 className="font-bold pb-4 ">Explanation:</h1>
                 <div>{quizData[qIndex] && quizData[qIndex].explanation}</div>
               </div>
