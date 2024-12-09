@@ -11,7 +11,10 @@ export interface Info {
   
   export interface Quiz {
     question: string;
-    explanation?: string;
+    explanation?: {
+      description: string, 
+      resourceLink?: string,
+    };
     answer: Answer[];
   }
   

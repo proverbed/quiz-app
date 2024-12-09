@@ -84,7 +84,7 @@ const QuizComponent = () => {
       }
       console.log(count, quizData.length, score);
     });
-  }, [status]);
+  }, [status, quizData]);
 
   return (
     <>
@@ -231,7 +231,37 @@ const QuizComponent = () => {
             <div className="bg-gray-100 rounded-md px-4 py-6">
               <div className="sm:w-3/4 w-full">
                 <h1 className="font-bold pb-4 ">Explanation:</h1>
-                <div>{quizData[qIndex] && quizData[qIndex].explanation}</div>
+                <div>
+                  {quizData[qIndex] &&
+                    quizData[qIndex].explanation &&
+                    quizData[qIndex].explanation.description}
+                </div>
+
+                <div
+                  className={
+                    status === Status.Review &&
+                    quizData[qIndex] &&
+                    quizData[qIndex].explanation &&
+                    quizData[qIndex].explanation.resourceLink
+                      ? "block"
+                      : "hidden"
+                  }
+                >
+                  <div className="pt-4">
+                    <Link
+                      to={
+                        (quizData[qIndex] &&
+                          quizData[qIndex].explanation &&
+                          quizData[qIndex].explanation.resourceLink) ||
+                        ""
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Learn more
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
